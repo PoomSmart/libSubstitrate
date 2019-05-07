@@ -1,0 +1,12 @@
+Package: com.ps.libsubstitrate
+Name: libSubstitrate
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Substrate/Substitute hooking selector.
+Maintainer: PoomSmart
+Author: PoomSmart
+Section: System
+Tag: role::developer
+Depiction: https://poomsmart.github.io/repo/depictions/libsubstitrate.html
+SileoDepiction: https://poomsmart.github.io/repo/sileodepictions/libsubstitrate.json

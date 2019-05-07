@@ -14,18 +14,18 @@ struct substitute_image *(*substitute_open_image)(const char *filename) = NULL;
 static bool didFindSubstitute = false;
 
 static void readDylib() {
-    if (!didFindSubstitute) {
-        MSImageRef ref = MSGetImageByName("/usr/lib/libsubstitute.dylib");
-        if (ref) {
+	if (!didFindSubstitute) {
+		MSImageRef ref = MSGetImageByName("/usr/lib/libsubstitute.dylib");
+		if (ref) {
 			substitute_hook_functions = (int (*)(const struct substitute_function_hook *, size_t, struct substitute_function_hook_record **, int))PSFindSymbolCallable(ref, "_substitute_hook_functions");
 			HBLogDebug(@"substitute_hook_functions exists: %d", substitute_hook_functions != NULL);
 			SubFindSymbol = (void *(*)(void *, const char *))_PSFindSymbolCallable(ref, "SubFindSymbol");
 			HBLogDebug(@"SubFindSymbol exists: %d", SubFindSymbol != NULL);
 			substitute_open_image = (struct substitute_image *(*)(const char *))_PSFindSymbolCallable(ref, "_substitute_open_image");
 			HBLogDebug(@"substitute_open_image exists: %d", substitute_open_image != NULL);
-        }
-        didFindSubstitute = true;
-    }
+		}
+		didFindSubstitute = true;
+	}
 }
 
 EXPORT

@@ -1,12 +1,5 @@
 #import "substitrate.h"
 
-struct substitute_function_hook {
-    void *function;
-    void *replacement;
-    void *old_ptr;
-    int options;
-};
-struct substitute_function_hook_record;
 int (*substitute_hook_functions)(const struct substitute_function_hook *hooks, size_t nhooks, struct substitute_function_hook_record **recordp, int options) = NULL;
 void *(*SubFindSymbol)(void *image, const char *name) = NULL;
 struct substitute_image *(*substitute_open_image)(const char *filename) = NULL;
@@ -65,39 +58,42 @@ void *PSFindSymbolCallableCompat(const char *image, const char *symbol) {
 }
 
 EXPORT
-void PSHookFunction(void *symbol, void *replace, void **result) {
+int PSHookFunction(void *func, void *replace, void **result) {
 	readDylib();
 	if (substitute_hook_functions) {
-		struct substitute_function_hook hook = { symbol, replace, result };
-#if DEBUG
+		struct substitute_function_hook hook = { func, replace, result };
+		int ret = substitute_hook_functions(&hook, 1, NULL, 1);
 		HBLogDebug(@"Substitute hook function return value: %d", substitute_hook_functions(&hook, 1, NULL, 1));
-#else
-		substitute_hook_functions(&hook, 1, NULL, 1);
-#endif
+		return ret;
 	} else
-		MSHookFunction(symbol, replace, result);
+		MSHookFunction(func, replace, result);
+	return 0;
 }
 
 EXPORT
-void PSHookFunction1(MSImageRef ref, const char *symbol, void *replace, void **result) {
-	PSHookFunction(_PSFindSymbolCallable(ref, symbol), replace, result);
+int PSHookFunction1(MSImageRef ref, const char *symbol, void *replace, void **result) {
+	return PSHookFunction(_PSFindSymbolCallable(ref, symbol), replace, result);
 }
 
 EXPORT
-void PSHookFunction2(MSImageRef ref, const char *symbol, void *replace) {
-	PSHookFunction1(ref, symbol, replace, NULL);
+int PSHookFunction2(MSImageRef ref, const char *symbol, void *replace) {
+	return PSHookFunction1(ref, symbol, replace, NULL);
 }
 
 EXPORT
-void PSHookFunction3(const char *image, const char *symbol, void *replace, void **result) {
-	PSHookFunction(PSFindSymbolCallableCompat(image, symbol), replace, result);
+int PSHookFunction3(const char *image, const char *symbol, void *replace, void **result) {
+	return PSHookFunction(PSFindSymbolCallableCompat(image, symbol), replace, result);
 }
 
 EXPORT
-void PSHookFunction4(const char *image, const char *symbol, void *replace) {
-	PSHookFunction3(image, symbol, replace, NULL);
+int PSHookFunction4(const char *image, const char *symbol, void *replace) {
+	return PSHookFunction3(image, symbol, replace, NULL);
 }
+
+#if TARGET_OS_SIMULATOR
 
 int main(int argc, char **argv, char **envp) {
 	return 0;
 }
+
+#endif

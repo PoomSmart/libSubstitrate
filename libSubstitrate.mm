@@ -21,17 +21,14 @@ static void readDylib() {
 	}
 }
 
-EXPORT
 void *PSFindSymbolReadable(MSImageRef image, const char *name) {
 	return _PSFindSymbolReadable(image, name);
 }
 
-EXPORT
 void *PSFindSymbolCallable(MSImageRef image, const char *name) {
 	return _PSFindSymbolCallable(image, name);
 }
 
-EXPORT
 void *PSFindSymbolReadableCompat(const char *image, const char *symbol) {
 	readDylib();
 	if (SubFindSymbol && substitute_open_image) {
@@ -44,7 +41,6 @@ void *PSFindSymbolReadableCompat(const char *image, const char *symbol) {
 	return PSFindSymbolReadable(image ? MSGetImageByName(image) : NULL, symbol);
 }
 
-EXPORT
 void *PSFindSymbolCallableCompat(const char *image, const char *symbol) {
 	readDylib();
 	if (SubFindSymbol && substitute_open_image) {
@@ -57,7 +53,6 @@ void *PSFindSymbolCallableCompat(const char *image, const char *symbol) {
 	return PSFindSymbolCallable(image ? MSGetImageByName(image) : NULL, symbol);
 }
 
-EXPORT
 int PSHookFunction(void *func, void *replace, void **result) {
 	readDylib();
 	if (substitute_hook_functions) {
@@ -70,22 +65,18 @@ int PSHookFunction(void *func, void *replace, void **result) {
 	return 0;
 }
 
-EXPORT
 int PSHookFunction1(MSImageRef ref, const char *symbol, void *replace, void **result) {
 	return PSHookFunction(_PSFindSymbolCallable(ref, symbol), replace, result);
 }
 
-EXPORT
 int PSHookFunction2(MSImageRef ref, const char *symbol, void *replace) {
 	return PSHookFunction1(ref, symbol, replace, NULL);
 }
 
-EXPORT
 int PSHookFunction3(const char *image, const char *symbol, void *replace, void **result) {
 	return PSHookFunction(PSFindSymbolCallableCompat(image, symbol), replace, result);
 }
 
-EXPORT
 int PSHookFunction4(const char *image, const char *symbol, void *replace) {
 	return PSHookFunction3(image, symbol, replace, NULL);
 }

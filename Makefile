@@ -1,5 +1,11 @@
-TARGET = iphone:clang:latest:5.0
-ARCHS = armv7 armv7s arm64 arm64e
+ifeq ($(SIMULATOR),1)
+	TARGET = simulator:clang:latest:8.0
+	ARCHS = x86_64 i386
+else
+	TARGET = iphone:clang:latest:5.0
+	ARCHS = armv7 armv7s arm64 arm64e
+endif
+
 PACKAGE_VERSION = 0.0.1-4
 
 include $(THEOS)/makefiles/common.mk

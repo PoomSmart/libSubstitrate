@@ -15,3 +15,11 @@ libSubstitrate_FILES = libSubstitrate.mm
 libSubstitrate_LIBRARIES = substrate
 
 include $(THEOS_MAKE_PATH)/library.mk
+
+# make setup SIMULATOR=1 PL_SIMULATOR_VERSION=<target-iOS-version>
+ifeq ($(SIMULATOR),1)
+include ../preferenceloader/locatesim.mk
+setup:: clean all
+	@sudo rm -f $(PL_SIMULATOR_ROOT)/usr/lib/$(LIBRARY_NAME).dylib
+	@sudo cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib $(PL_SIMULATOR_ROOT)/usr/lib/
+endif
